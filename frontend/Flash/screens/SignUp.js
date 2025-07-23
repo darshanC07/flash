@@ -1,12 +1,40 @@
 import { useState } from 'react'
-import { View, Text, SafeAreaView, Platform, StatusBar, TextInput, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { View, Text, SafeAreaView, Platform, StatusBar, TextInput, StyleSheet, Image, TouchableOpacity, Button, Touchable } from 'react-native'
 
-export default function SignUp() {
+export default function SignUp({navigation}) {
   const [name, setName] = useState(undefined)
   const [email, setEmail] = useState(undefined)
   const [password, setPassword] = useState(undefined)
   const [isVisible, setVisibility] = useState(false)
   const [topics, setSelected] = useState([['Artificial Intelligence', 'white', 'black', false], ['Data Science', 'white', 'black', false], ['Maths', 'white', 'black', false], ['Physics', 'white', 'black', false]])
+
+  const baseUrl = "https://rsh1qw88-5000.inc1.devtunnels.ms/"
+
+  async function handleSignUp() {
+    let selectedCourses = []
+    topics.map((topic, index) => {
+      if (topic[3]) {
+        selectedCourses.push(topic[0])
+      }
+    })
+    // console.log("Name : " + name + " email : " + email + " password: " + password + " selected courses " + selectedCourses)
+    res = await fetch(baseUrl + "signup", {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        password: password,
+        selectedCourses : selectedCourses
+      })
+    })
+
+    data = await res.json();
+    console.log(data);
+    if(data['code']==200){
+      navigation.navigate("Home")
+    }
+  }
 
   return (
     <SafeAreaView style={{ marginTop: StatusBar.currentHeight }}>
@@ -69,6 +97,13 @@ export default function SignUp() {
             )
           })}
         </View>
+        <TouchableOpacity onPress={handleSignUp}>
+          <View style={stylesheet.signUpButton}>
+            <Text style={{
+              fontSize: 25
+            }}>Sign Up</Text>
+          </View>
+        </TouchableOpacity>
       </View >
     </SafeAreaView >
   )
@@ -97,7 +132,7 @@ const stylesheet = StyleSheet.create({
     width: 30,
   },
   topics: {
-    height: '40%',
+    // height: '40%',
     // borderColor: 'black',
     // borderWidth: 2,
     flexDirection: 'row',
@@ -125,6 +160,17 @@ const stylesheet = StyleSheet.create({
     position: 'absolute',
     right: -20,
     bottom: -15
+  },
+  signUpButton: {
+    marginTop: '20%',
+    height: 40,
+    width: '80%',
+    borderColor: 'black',
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    alignSelf: 'center'
   }
 })
 
