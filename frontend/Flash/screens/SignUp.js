@@ -1,7 +1,11 @@
-import { useState } from 'react'
-import { View, Text, SafeAreaView, Platform, StatusBar, TextInput, StyleSheet, Image, TouchableOpacity, Button, Touchable } from 'react-native'
+import { useState, useEffect } from 'react'
+import { View, Text, SafeAreaView, Platform, StatusBar, TextInput, StyleSheet, Image, TouchableOpacity, Button, Touchable, TouchableWithoutFeedback } from 'react-native'
 
-export default function SignUp({navigation}) {
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+
+
+export default function SignUp({ navigation }) {
   const [name, setName] = useState(undefined)
   const [email, setEmail] = useState(undefined)
   const [password, setPassword] = useState(undefined)
@@ -11,30 +15,70 @@ export default function SignUp({navigation}) {
   const baseUrl = "https://rsh1qw88-5000.inc1.devtunnels.ms/"
 
   async function handleSignUp() {
-    let selectedCourses = []
-    topics.map((topic, index) => {
-      if (topic[3]) {
-        selectedCourses.push(topic[0])
-      }
-    })
-    // console.log("Name : " + name + " email : " + email + " password: " + password + " selected courses " + selectedCourses)
-    res = await fetch(baseUrl + "signup", {
-      method: "POST",
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: name,
-        email: email,
-        password: password,
-        selectedCourses : selectedCourses
+    try {
+      let selectedCourses = []
+      topics.map((topic, index) => {
+        if (topic[3]) {
+          selectedCourses.push(topic[0])
+        }
       })
-    })
+      console.log("Name : " + name + " email : " + email + " password: " + password + " selected courses " + selectedCourses)
 
-    data = await res.json();
-    console.log(data);
-    if(data['code']==200){
-      navigation.navigate("Home")
+      const res = await fetch(baseUrl + "signup", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          password: password,
+          selectedCourses: selectedCourses
+        })
+      })
+
+      // console.log("here")
+      const data = await res.json();
+      console.log(data);
+
+      if (data && data.uid) {
+        await storeData('uid', data.uid)
+        await storeData('name', name)
+        await storeData('email', email)
+
+        if (data.code == 200) {
+          navigation.navigate("Home")
+        }
+      } else {
+        console.error('Invalid response from server:', data)
+      }
+    } catch (error) {
+      console.error('Error during signup:', error)
     }
   }
+
+  async function storeData(key, value) {
+    try {
+      await AsyncStorage.setItem(key, value);
+      console.log('Data saved successfully!');
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
+  }
+
+  useEffect(() => {
+    const checkUserSession = async () => {
+      try {
+        const uid = await AsyncStorage.getItem('uid');
+        if (uid !== null) {
+          console.log("User already logged in, navigating to Home");
+          navigation.navigate("Home");
+        }
+      } catch (error) {
+        console.error('Error checking user session:', error);
+      }
+    };
+
+    checkUserSession();
+  }, [])
 
   return (
     <SafeAreaView style={{ marginTop: StatusBar.currentHeight }}>
@@ -60,12 +104,12 @@ export default function SignUp({navigation}) {
         <Text style={[stylesheet.field, { marginTop: 20 }]}>Password</Text>
         <View style={[stylesheet.input, { display: 'flex', justifyContent: 'center' }]}>
           <TextInput style={stylesheet.textField} secureTextEntry={isVisible ? false : true} value={password} onChangeText={(text) => setPassword(text)} />
-          <TouchableOpacity style={{
+          <TouchableWithoutFeedback style={{
             position: 'absolute',
             right: 10
           }} onPress={() => {
             isVisible ? setVisibility(false) : setVisibility(true)
-          }}><Image source={isVisible ? require('../assets/signup/showPassword.png') : require('../assets/signup/hidePassword.png')} style={stylesheet.visibilityImage} /></TouchableOpacity>
+          }}><Image source={isVisible ? require('../assets/signup/showPassword.png') : require('../assets/signup/hidePassword.png')} style={stylesheet.visibilityImage} /></TouchableWithoutFeedback>
         </View>
         <Text style={[stylesheet.field, { marginTop: 20 }]}>Topics</Text>
         <View style={stylesheet.topics}>
@@ -130,6 +174,8 @@ const stylesheet = StyleSheet.create({
   visibilityImage: {
     height: 30,
     width: 30,
+    position:'absolute',
+    right:10
   },
   topics: {
     // height: '40%',
