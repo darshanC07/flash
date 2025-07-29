@@ -1,9 +1,9 @@
-import { View, Text, SafeAreaView, StatusBar, Image, StyleSheet, TouchableWithoutFeedback } from 'react-native'
+import { View, Text, SafeAreaView, StatusBar, Image, StyleSheet, TouchableWithoutFeedback, TouchableOpacity } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useState, useEffect } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 
-export default function Home(navigation) {
+export default function Home({navigation}) {
   const [name, setName] = useState(null)
   const [uid, setUID] = useState(null)
   const [email, setEmail] = useState(null)
@@ -30,9 +30,9 @@ export default function Home(navigation) {
   useEffect(() => {
     const setData = async () => {
       try {
-        console.log(await AsyncStorage.getItem('uid') + " " + await AsyncStorage.getItem('name'))
+        console.log(await AsyncStorage.getItem('uid') + " ") // + await AsyncStorage.getItem('name')
         setUID(await AsyncStorage.getItem('uid'))
-        setName(await AsyncStorage.getItem('name'))
+        // setName(await AsyncStorage.getItem('name'))
         setEmail(await AsyncStorage.getItem('email'))
       } catch (error) {
         console.error('Error getting data:', error);
@@ -53,37 +53,28 @@ export default function Home(navigation) {
       paddingLeft: 10,
       paddingRight: 10
     }}>
-      <View key={'header'} style={{justifyContent:'space-between',flexDirection:'row'}}>
+      <View key={'header'} style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
         <View>
           <Text>Flash</Text>
         </View>
         <View style={{
-          flexDirection:'row',
-          gap:10
+          flexDirection: 'row',
+          gap: 10
         }}>
-          <View style={{ 
+          <View style={{
             flexDirection: 'row',
-            borderColor:'black',
-            borderWidth:1,
-            padding:6,
-            paddingTop:3,
-            paddingBottom:3,
-            alignSelf:'center',
-            borderRadius:10
-           }}>
+            borderColor: 'black',
+            borderWidth: 1,
+            padding: 6,
+            paddingTop: 3,
+            paddingBottom: 3,
+            alignSelf: 'center',
+            borderRadius: 10
+          }}>
             <Image source={require("../assets/home/streak.png")} style={stylesheet.streak} />
             <Text style={{ fontSize: 20, fontWeight: 'bold' }}>2</Text>
           </View>
-          <TouchableWithoutFeedback onPress={() => {
-            const logout = async () => {
-              await AsyncStorage.removeItem('uid')
-              await AsyncStorage.removeItem('name')
-              await AsyncStorage.removeItem('email')
-
-            }
-            logout()
-            navigation.navigate("SignUp")
-          }}>
+          <TouchableWithoutFeedback onPress={()=>{navigation.navigate("Profile")}}>
             <Image source={require("../assets/home/user.png")} style={stylesheet.user} />
           </TouchableWithoutFeedback>
         </View>
@@ -93,11 +84,17 @@ export default function Home(navigation) {
         <View>
           <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'baseline' }}>
             <Text style={{ fontSize: 20 }}>{greeting}</Text>
-            <Text style={{ fontSize: 24, fontWeight: 'bold' }}> {name ? name : 'user'}</Text>
+            <Text style={{ fontSize: 24, fontWeight: 'bold' }}> {name ? name : 'Buddy'}</Text>
           </View>
           <Text style={{ color: "#454242", fontSize: 18 }}>Ready to learn something new?"</Text>
         </View>
       </View>
+      <TouchableOpacity style={stylesheet.start} onPress={()=>{navigation.navigate("Generate")}}>
+        <View >
+          <Text style={{ fontSize: 20 }}>Generate</Text>
+        </View>
+
+      </TouchableOpacity>
       <Text style={{
         position: 'absolute',
         bottom: '56%',
@@ -151,5 +148,18 @@ const stylesheet = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 20,
     backgroundColor: '#ddd8e0ff'
+  },
+  start: {
+    borderWidth: 1,
+    borderColor: 'black',
+    width: '40%',
+    height: '5%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    position: 'absolute',
+    bottom: '65%',
+    backgroundColor:'#8485E1',
+    borderRadius:10
   }
 })
