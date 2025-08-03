@@ -10,7 +10,7 @@ from google.genai import types
 import json
 load_dotenv()
 
-client = genai.Client(api_key=os.getenv("apiKey"))
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 sys_instruction = """Your task is to generate an json containing Questions and Answers. You will be given a query, and based on that topic, you need to generate 10 related questions and 11th as title. The answer should be up to one word or one sentence..
 for example : {
