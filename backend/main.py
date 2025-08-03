@@ -1,4 +1,4 @@
-from flask import Flask,request
+from flask import Flask,request, redirect
 import requests
 import os
 from flask_cors import CORS
@@ -146,5 +146,12 @@ def getCreations():
     return {
         "creations" : creations
     }
+    
+@app.route('/open')
+def open_flashapp():
+    msg = request.args.get('msg', '')
+    encoded_msg = msg.replace(' ', '%20')
+    return redirect(f'flashapp://temp/{encoded_msg}')    
+
 if __name__ == "__main__":
     app.run(debug=True)
