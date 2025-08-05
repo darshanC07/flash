@@ -1,13 +1,18 @@
-import { SafeAreaView, StyleSheet, Text, View, StatusBar, PanResponder, Animated, Easing, TouchableWithoutFeedback, ImageBackground } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, View, StatusBar, PanResponder, Animated, Easing, TouchableWithoutFeedback, ImageBackground, BackHandler } from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
+import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function FlashCards() {
+export default function FlashCards({navigation}) {
+    const route = useRoute();
+    const { data } = route.params;
     const [index, setIndex] = useState(0);
+    const [cards, setCards] = useState([])
+    const [title, setTitle] = useState(null)
     const [isFlipped, setIsFlipped] = useState(false);
     const flipAnimation = useRef(new Animated.Value(0)).current
     const [themeN, setThemeN] = useState(0)
-    const [theme,setTheme] = useState("basic")
+    const [theme, setTheme] = useState("basic")
     const themes = {
         "landscape": [[require("../assets/themes/landscape/theme1.jpg"), '#f49700', "black"], [require("../assets/themes/landscape/theme2.jpg"), "#38dca5", "black"], [require("../assets/themes/landscape/theme3.jpg"), "#5c409d", "white"], [require("../assets/themes/landscape/theme4.jpg"), "#700021", "white"], [require("../assets/themes/landscape/theme5.jpg"), "#fac8c0", "black"],],
         "basic": [[require("../assets/themes/basic/theme1.jpg"), '#22618f', "white"], [require("../assets/themes/basic/theme2.jpg"), "#f5a25f", "black"], [require("../assets/themes/basic/theme3.jpg"), "#f9eddd", "black"], [require("../assets/themes/basic/theme4.jpg"), "#0b4e5d", "white"], [require("../assets/themes/basic/theme5.jpg"), "#0f596f", "white"],]
@@ -15,22 +20,49 @@ export default function FlashCards() {
 
     console.log("Theme loaded successfully")
 
-    useEffect(()=>{
-        const getTheme = async()=>{
+    useEffect(() => {
+        const getTheme = async () => {
             const valTheme = await AsyncStorage.getItem("theme")
-            console.log("current theme : "+valTheme)
-            if(valTheme){
+            console.log("current theme : " + valTheme)
+            if (valTheme) {
                 setTheme(valTheme)
             }
             else
                 setTheme("basic")
         }
         getTheme()
-    },[])
+    }, [])
 
-    let cards = [["What is the primary characteristic of the Waterfall model?", "Sequential phases."], ["List the typical phases of the Waterfall model.", "Requirements, Design, Implementation, Testing, Deployment, Maintenance."], ["Is the Waterfall model an iterative development approach?", "No."], ["What type of projects is the Waterfall model best suited for?", "Projects with stable and well-understood requirements."], ["What is a major disadvantage of the Waterfall model regarding late changes?", "It is difficult and costly to accommodate changes late in the lifecycle."], ["What is an advantage of using the Waterfall model?", "It is simple to understand and manage."], ["Does the Waterfall model allow for feedback loops between phases?", "No, typically not directly."], ["When is testing typically performed in the Waterfall model?", "After implementation is complete."], ["What happens if a critical error is found during the testing phase?", "It can lead to significant rework across previous phases."], ["Is customer involvement continuous throughout the Waterfall project?", "No, mostly at the beginning and end."]]
+    let tempcards = [["What is the primary characteristic of the Waterfall model?", "Sequential phases."], ["List the typical phases of the Waterfall model.", "Requirements, Design, Implementation, Testing, Deployment, Maintenance."], ["Is the Waterfall model an iterative development approach?", "No."], ["What type of projects is the Waterfall model best suited for?", "Projects with stable and well-understood requirements."], ["What is a major disadvantage of the Waterfall model regarding late changes?", "It is difficult and costly to accommodate changes late in the lifecycle."], ["What is an advantage of using the Waterfall model?", "It is simple to understand and manage."], ["Does the Waterfall model allow for feedback loops between phases?", "No, typically not directly."], ["When is testing typically performed in the Waterfall model?", "After implementation is complete."], ["What happens if a critical error is found during the testing phase?", "It can lead to significant rework across previous phases."], ["Is customer involvement continuous throughout the Waterfall project?", "No, mostly at the beginning and end."]]
 
-    let title = "WaterFall Model"
+    let temptitle = "WaterFall Model"
+
+
+
+    useEffect(() => {
+        if (data) {
+            const nestedArray = Object.keys(data)
+                .map(key => data[key])
+                .filter(pair => pair.length === 2)
+            console.log(nestedArray)
+            // console.log("received data")
+            setCards(nestedArray)
+
+            const Title = Object.keys(data)
+                .map(key => data[key])
+                .filter(pair => pair.length === 1)
+            setTitle(Title)
+        }
+    }, [])
+
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener("hardwareBackPress", async () => {
+            navigation.replace("Home");
+            return true;
+        });
+
+        return () => backHandler.remove();
+    }, []);
 
     const [pan] = useState(new Animated.ValueXY());
 
@@ -187,7 +219,7 @@ export default function FlashCards() {
                                                 <Text style={{
                                                     fontSize: 20,
                                                     textAlign: 'center',
-                                                }}>{cards[index][0]}</Text>
+                                                }}>{cards[index] && cards[index][0]}</Text>
 
                                             </View>
                                         </ImageBackground>
@@ -213,7 +245,7 @@ export default function FlashCards() {
                                             color: themes[theme][themeN][2],
                                             // backgroundColor:'white'
                                             // fontWeight:'bold'
-                                        }}>{cards[index][1]}</Text>
+                                        }}>{cards[index] && cards[index][1]}</Text>
                                     </Animated.View>
                                 </View>
                             </TouchableWithoutFeedback>
@@ -257,9 +289,10 @@ export default function FlashCards() {
 
 const styles = StyleSheet.create({
     title: {
-        fontSize: 30,
+        fontSize: 25,
         alignSelf: 'center',
         marginTop: '10%',
-        maxWidth: '80%'
+        maxWidth: '80%',
+        textAlign: 'center'
     }
 })
