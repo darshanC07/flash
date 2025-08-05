@@ -1,32 +1,44 @@
 import { SafeAreaView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useEffect, useState } from 'react'
 
-export default function Generate({navigation}) {
+export default function Generate({ navigation }) {
     const [input, setInput] = useState("")
     const [cards, setCards] = useState(null)
     const baseUrl = "https://rsh1qw88-5000.inc1.devtunnels.ms/"
-
+    let userID;
+    async function getUID() {
+        userID = await AsyncStorage.getItem("uid")
+    }
+    useEffect(() => {
+        getUID()
+    })
     async function generateFlashCard() {
         console.log("input : " + input)
         const res = await fetch(baseUrl + "generate", {
-            method:"POST",
+            method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                // userID: userID,
+                userID: "enKFdqeKjKRJWwBwa1sLRbvLe1G2",
                 input: input
             })
         })
 
         const data = await res.json();
-        console.log(Object.values(data.result));
-        setCards(Object.values(data.result))
+        console.log(JSON.stringify(data.result));
+        setCards(data.result)
+        // setCards(Object.values(data.result).slice(0, 10))
+        // setTitle(Object.values(data.result)[10])
     }
 
-    useEffect(()=>{
-        if(cards!=null){
-            navigation.navigate("FlashCards",{cards : cards})
+    useEffect(() => {
+        if (cards != null) {
+            const data = cards
+            navigation.navigate("FlashCards", { data })
             // navigation.navigate("FlashCards")
         }
-    },[cards])
+    }, [cards])
 
     return (
         <SafeAreaView style={{ marginTop: StatusBar.currentHeight, alignItems: 'center', justifyContent: 'center', height: '80%' }}>
@@ -47,7 +59,7 @@ export default function Generate({navigation}) {
                     <TextInput style={stylesheet.textField} multiline={true}
                         numberOfLines={10} value={input} onChangeText={(text) => setInput(text)} />
                 </View>
-                <TouchableOpacity style={stylesheet.createButton} onPress={()=>generateFlashCard()}>
+                <TouchableOpacity style={stylesheet.createButton} onPress={() => generateFlashCard()}>
                     <View>
                         <Text style={{
                             fontSize: 20

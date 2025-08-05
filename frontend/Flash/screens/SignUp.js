@@ -174,8 +174,8 @@ const stylesheet = StyleSheet.create({
   visibilityImage: {
     height: 30,
     width: 30,
-    position:'absolute',
-    right:10
+    position: 'absolute',
+    right: 10
   },
   topics: {
     // height: '40%',
