@@ -2,28 +2,46 @@
   "expo": {
     "name": "Flash",
     "slug": "Flash",
+    "scheme": "flashapp",
     "version": "1.0.0",
     "orientation": "portrait",
-    
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
-      "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.darshanc07.Flash"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.darshanc07.Flash",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": {
+            "scheme": "flashapp",
+            "host": "*"
+          },
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "91fc3602-a893-47bd-bdb5-9a35fe484cb1"
+      }
     }
   }
 }
