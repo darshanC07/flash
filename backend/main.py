@@ -1,4 +1,4 @@
-from flask import Flask,request, redirect
+from flask import Flask,request, redirect, render_template
 import requests
 import os
 from flask_cors import CORS
@@ -101,10 +101,12 @@ def login():
     try:
         user = auth.sign_in_with_email_and_password(data["email"],data["password"])
         print(user)
+        userData = users.document(user["localId"]).get().to_dict()
         return {
             "msg" : "User Found",
             "code" : 200,
-            "uid" : user["localId"]
+            "uid" : user["localId"],
+            "name" : userData["name"]
         }
     
     except Exception as e:
@@ -147,11 +149,24 @@ def getCreations():
         "creations" : creations
     }
     
+    
+@app.route('/getUserDetails',methods=["GET"])
+def getUserData():
+    data = request.json
+    uid = data["uid"]
+    print(uid)
+    userData = users.document(uid).get().to_dict()
+    print(userData["name"])
+    return {
+        "userData" : userData
+    }
+    
 @app.route('/open')
 def open_flashapp():
     msg = request.args.get('msg', '')
     encoded_msg = msg.replace(' ', '%20')
-    return redirect(f'flashapp://temp/{encoded_msg}')    
+    # return redirect(f'flashapp://temp/{encoded_msg}')  
+    return   render_template("landing.html",msg = encoded_msg)
 
 if __name__ == "__main__":
     app.run(debug=True)

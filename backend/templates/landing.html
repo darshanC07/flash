@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Opening Flash....</title>
+    <script type="text/javascript">
+      function openApp() {
+        window.location = "flashapp://temp/{{msg}}";
+
+        setTimeout(function(){
+            window.location = "https://play.google.com/store/apps/details?id=com.darshanc07.Flash";
+        },1500)
+      }
+    </script>
+  </head>
+  <body onload="openApp()">
+    <center>
+      <h2>Opening FlashApp...</h2>
+      <p>
+        If nothing happens,
+        <a
+          href="https://play.google.com/store/apps/details?id=com.darshanc07.Flash"
+          >download the app here</a
+        >.
+      </p>
+    </center>
+  </body>
+</html>
