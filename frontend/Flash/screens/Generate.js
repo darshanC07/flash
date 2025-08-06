@@ -1,4 +1,4 @@
-import { SafeAreaView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { SafeAreaView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View, BackHandler } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useEffect, useState } from 'react'
 
@@ -6,21 +6,24 @@ export default function Generate({ navigation }) {
     const [input, setInput] = useState("")
     const [cards, setCards] = useState(null)
     const baseUrl = "https://rsh1qw88-5000.inc1.devtunnels.ms/"
-    let userID;
+    const [userID, setID] = useState(null);
     async function getUID() {
-        userID = await AsyncStorage.getItem("uid")
+        let userID = await AsyncStorage.getItem("uid")
+        return userID
     }
     useEffect(() => {
-        getUID()
-    })
+        const temp = async () => {
+            setID(await getUID())
+        }
+        temp()
+    },[])
     async function generateFlashCard() {
         console.log("input : " + input)
         const res = await fetch(baseUrl + "generate", {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                // userID: userID,
-                userID: "enKFdqeKjKRJWwBwa1sLRbvLe1G2",
+                userID: userID,
                 input: input
             })
         })
@@ -39,6 +42,15 @@ export default function Generate({ navigation }) {
             // navigation.navigate("FlashCards")
         }
     }, [cards])
+
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener("hardwareBackPress", async () => {
+            navigation.replace("Home");
+            return true;
+        });
+
+        return () => backHandler.remove();
+    }, []);
 
     return (
         <SafeAreaView style={{ marginTop: StatusBar.currentHeight, alignItems: 'center', justifyContent: 'center', height: '80%' }}>
