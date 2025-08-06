@@ -1,14 +1,15 @@
-import { View, Text, SafeAreaView, StatusBar, Image, StyleSheet, TouchableWithoutFeedback, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, SafeAreaView, StatusBar, Image, StyleSheet, TouchableWithoutFeedback, TouchableOpacity, ScrollView, BackHandler } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useState, useEffect } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 export default function Home({ navigation }) {
   const [name, setName] = useState(null)
   const [uid, setUID] = useState(null)
   const [email, setEmail] = useState(null)
   const [greeting, setGreeting] = useState(null)
-  const [collections, setCollections] = useState([["Water fall model"]])
+  const [collections, setCollections] = useState([])
 
   const baseUrl = "https://rsh1qw88-5000.inc1.devtunnels.ms/"
 
@@ -33,39 +34,56 @@ export default function Home({ navigation }) {
   useEffect(() => {
     const setData = async () => {
       try {
-        console.log(await AsyncStorage.getItem('uid') + " ") // + await AsyncStorage.getItem('name')
-        setUID(await AsyncStorage.getItem('uid'))
-        // setName(await AsyncStorage.getItem('name'))
-        setEmail(await AsyncStorage.getItem('email'))
+        console.log(await AsyncStorage.getItem('uid') + " ")
+        let storedUID = await AsyncStorage.getItem('uid')
+        if (storedUID != null) {
+          setUID(storedUID)
+          setName(await AsyncStorage.getItem('name'))
+          setEmail(await AsyncStorage.getItem('email'))
+          
+          await getCreations(storedUID)
+        } else {
+          navigation.replace("SignUp")
+        }
       } catch (error) {
         console.error('Error getting data:', error);
       }
     }
+
+    async function getCreations(userID) {
+      try {
+        const res = await fetch(baseUrl + "getCreations", {
+          method: "POST",
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userID: userID
+          })
+        })
+
+        const data = await res.json();
+        console.log(data.creations.length)
+        if (data.creations.length > 0) {
+          console.log(data.creations[0][11])
+        }
+        setCollections(data.creations)
+      } catch (error) {
+        console.error('Error fetching creations:', error);
+      }
+    }
+
     setData()
   }, []);
 
-  useEffect(() => {
-    async function getCreations() {
-      const res = await fetch(baseUrl + "getCreations", {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userID: "enKFdqeKjKRJWwBwa1sLRbvLe1G2"
-        })
-      })
 
-      const data = await res.json();
-      console.log(data.creations[0][11])
-      setCollections(data.creations)
-    }
-    getCreations()
-    // if(uid!=null){
-    //   getCreations()
-    // }
-    // else{
-    //   navigation.navigate("SignUp")
-    // }
-  }, [])
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", async () => {
+      navigation.replace("Home");
+      return true;
+    });
+
+    return () => backHandler.remove();
+  }, []);
 
   function showCard(index) {
     // console.log("cards  : "+JSON.stringify(collections[index]))
@@ -107,7 +125,8 @@ export default function Home({ navigation }) {
             <Text style={{ fontSize: 20, fontWeight: 'bold' }}>2</Text>
           </View>
           <TouchableWithoutFeedback onPress={() => { navigation.navigate("Profile") }}>
-            <Image source={require("../assets/home/user.png")} style={stylesheet.user} />
+            {/* <Image source={require("../assets/home/user.png")} style={stylesheet.user} /> */}
+            <FontAwesome5 name="user-circle" size={35} color="black" />
           </TouchableWithoutFeedback>
         </View>
       </View>
@@ -134,7 +153,7 @@ export default function Home({ navigation }) {
         fontSize: 20
       }}>Your Collections</Text>
       <View style={stylesheet.collections}>
-        {collections.length == 0 ?
+        {collections.length === 0 ?
           <Text style={{
             alignSelf: 'center',
             marginTop: '50%',
