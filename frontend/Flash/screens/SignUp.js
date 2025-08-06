@@ -22,37 +22,41 @@ export default function SignUp({ navigation }) {
           selectedCourses.push(topic[0])
         }
       })
-      console.log("Name : " + name + " email : " + email + " password: " + password + " selected courses " + selectedCourses)
-
-      const res = await fetch(baseUrl + "signup", {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          password: password,
-          selectedCourses: selectedCourses
-        })
-      })
-
-      // console.log("here")
-      const data = await res.json();
-      console.log(data);
-
-      if (data && data.uid) {
-        await storeData('uid', data.uid)
-        await storeData('name', name)
-        await storeData('email', email)
-
-        if (data.code == 200) {
-          navigation.navigate("Home")
-        }
+      if (!name || !email || !password || selectedCourses.length == 0) {
+        console.log("no data entered")
       } else {
-        console.error('Invalid response from server:', data)
+        console.log("Name : " + name + " email : " + email + " password: " + password + " selected courses " + selectedCourses)
+
+        const res = await fetch(baseUrl + "signup", {
+          method: "POST",
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            password: password,
+            selectedCourses: selectedCourses
+          })
+        })
+
+        // console.log("here")
+        const data = await res.json();
+        console.log(data);
+
+        if (data.code == 200 && data.uid) {
+          await storeData('uid', data.uid)
+          await storeData('name', name)
+          await storeData('email', email)
+
+          navigation.replace("Home")
+          
+        } else {
+          console.error('Invalid response from server:', data)
+        }
       }
     } catch (error) {
       console.error('Error during signup:', error)
     }
+
   }
 
   async function storeData(key, value) {
@@ -86,22 +90,31 @@ export default function SignUp({ navigation }) {
         fontSize: 36,
         textAlign: 'center',
         marginTop: 40
-      }}>Sign Up</Text>
+      }}>Create Account</Text>
 
       <View style={{
         width: '90%',
         alignSelf: 'center',
         marginTop: 20
       }}>
-        <Text style={stylesheet.field}>Username</Text>
+        <View style={{ flexDirection: 'row', marginTop: 20 }}>
+          <Text style={stylesheet.field}>Username</Text>
+          <Text style={{ color: '#ec1e22' }}>*</Text>
+        </View>
         <View style={stylesheet.input}>
           <TextInput style={stylesheet.textField} value={name} onChangeText={(text) => setName(text)} />
         </View>
-        <Text style={[stylesheet.field, { marginTop: 20 }]}>Email</Text>
+        <View style={{ flexDirection: 'row', marginTop: 20 }}>
+          <Text style={stylesheet.field}>Email</Text>
+          <Text style={{ color: '#ec1e22' }}>*</Text>
+        </View>
         <View style={stylesheet.input}>
           <TextInput style={stylesheet.textField} value={email} onChangeText={(text) => setEmail(text)} />
         </View>
-        <Text style={[stylesheet.field, { marginTop: 20 }]}>Password</Text>
+        <View style={{ flexDirection: 'row', marginTop: 20 }}>
+          <Text style={stylesheet.field}>Password</Text>
+          <Text style={{ color: '#ec1e22' }}>*</Text>
+        </View>
         <View style={[stylesheet.input, { display: 'flex', justifyContent: 'center' }]}>
           <TextInput style={stylesheet.textField} secureTextEntry={isVisible ? false : true} value={password} onChangeText={(text) => setPassword(text)} />
           <TouchableWithoutFeedback style={{
@@ -148,6 +161,12 @@ export default function SignUp({ navigation }) {
             }}>Sign Up</Text>
           </View>
         </TouchableOpacity>
+        <View style={stylesheet.loginConatiner}>
+          <Text style={{ fontSize: 18 }}>Already Registered?</Text>
+          <TouchableWithoutFeedback onPress={() => navigation.replace("Login")}>
+            <Text style={{ color: '#3366CC', fontSize: 18 }}>Login</Text>
+          </TouchableWithoutFeedback>
+        </View>
       </View >
     </SafeAreaView >
   )
@@ -217,6 +236,12 @@ const stylesheet = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     alignSelf: 'center'
+  },
+  loginConatiner: {
+    flexDirection: 'row',
+    gap: 7,
+    alignSelf: 'center',
+    marginTop: '10%'
   }
 })
 

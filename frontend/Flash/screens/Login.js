@@ -42,8 +42,10 @@ export default function Login({navigation}){
       await AsyncStorage.setItem("uid", data["uid"]);
       console.log('UID saved successfully!');
       await AsyncStorage.setItem("email", email);
-      console.log('Data saved successfully!');
-      navigation.navigate("Home")
+      console.log('email saved successfully!');
+      await AsyncStorage.setItem("name", data["name"]);
+      console.log('name saved successfully!');
+      navigation.replace("Home")
       // await AsyncStorage.setItem("uid", data["uid"]);
       // console.log('Data saved successfully!');
     }
@@ -82,6 +84,12 @@ export default function Login({navigation}){
             }}>Get Started</Text>
           </View>
         </TouchableOpacity>
+        <View style={stylesheet.signUpConatiner}>
+          <Text style={{fontSize:17}}>Don't have account?</Text>
+          <TouchableWithoutFeedback onPress={()=>navigation.replace("SignUp")}>
+            <Text style={{color:'#3366CC',fontSize:17}}> Sign up</Text>
+          </TouchableWithoutFeedback>
+        </View>
       </View>
     </SafeAreaView>
   )
@@ -123,5 +131,10 @@ const stylesheet = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     alignSelf: 'center'
+  },
+  signUpConatiner:{
+    flexDirection:'row',
+    alignSelf:'center',
+    marginTop:'4%'
   }
 })
