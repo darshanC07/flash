@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 import json
+import secrets
+import string
+
 load_dotenv()
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
@@ -57,6 +60,10 @@ CORS(app)
 
 users = db.collection("users")
 
+def getRandomString(length):
+    random_string = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(length))
+    return random_string
+
 @app.route("/signup",methods = ['POST'])
 def register():
     # print("hello")
@@ -76,7 +83,8 @@ def register():
             "name" : data["name"],
             "email" : data["email"],
             "selectedCourses" : data["selectedCourses"],
-            "creations" : []
+            "creations" : [],
+            "publicID" : getRandomString(22)
         })
         
         print(type(user))
@@ -160,13 +168,62 @@ def getUserData():
     return {
         "userData" : userData
     }
+  
+@app.route('/getPandC',methods=["GET","POST"])
+def getPandC():
+    data = request.json
+    uid = data["uid"]
+    cTitle = data["title"][0][0]
+    print(uid)
+    userData = users.document(uid).get().to_dict()
+    cID = -1
+    for i,card in enumerate(userData["creations"]):
+        for c in card.values():
+            if len(c)==1:
+                print(c)
+                print(cTitle)
+                if cTitle==c[0]:
+                    cID = i
+                    break
     
-@app.route('/open')
+    return {
+        "pID" : userData["publicID"],
+        "cID" : cID,
+        "code" : 200
+    }
+                    
+        
+    
+@app.route('/open',methods = ["GET"])
 def open_flashapp():
-    msg = request.args.get('msg', '')
-    encoded_msg = msg.replace(' ', '%20')
+    sender = request.args.get('f', '')
+    cardID = request.args.get('i', '')
+    encoded_sender = sender.replace(' ', '%20')
+    encoded_cardID = cardID.replace(' ', '%20')
+    print(encoded_sender)
+    print(encoded_cardID)
+    vdssadgsd = os.getenv("vkdsjbas")
+    user = db.collection('users').where(vdssadgsd, '==', encoded_sender).limit(1).get()
+    print(len(user))
+    try:
+        if len(user)!=0:
+            if user[0].id:
+                actual_user_id = user[0].id
+                # print(user[0].to_dict())
+                print(user[0].id)
+                userData = users.document(actual_user_id).get().to_dict()
+                cd = userData["creations"][int(encoded_cardID)]
+                # print(userData)
+                # return userData["creations"][int(encoded_cardID)]
+                return render_template("landing.html",cd=cd)
+        else :
+            return render_template("error.html")
+    except:
+        # print("here")
+        return render_template("error.html")
+    
     # return redirect(f'flashapp://temp/{encoded_msg}')  
-    return   render_template("landing.html",msg = encoded_msg)
+    # return  render_template("landing.html",s = encoded_sender,c = encoded_cardID)
 
 if __name__ == "__main__":
     app.run(debug=True)
