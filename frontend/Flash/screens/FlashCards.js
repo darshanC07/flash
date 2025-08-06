@@ -1,9 +1,13 @@
-import { SafeAreaView, StyleSheet, Text, View, StatusBar, PanResponder, Animated, Easing, TouchableWithoutFeedback, ImageBackground, BackHandler } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, View, StatusBar, PanResponder, Animated, Easing, TouchableWithoutFeedback, ImageBackground, BackHandler, TouchableOpacity, Image, Share } from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Speech from 'expo-speech';
 
-export default function FlashCards({navigation}) {
+export default function FlashCards({ navigation }) {
+
+    const baseUrl = "https://rsh1qw88-5000.inc1.devtunnels.ms/"
+
     const route = useRoute();
     const { data } = route.params;
     const [index, setIndex] = useState(0);
@@ -11,6 +15,7 @@ export default function FlashCards({navigation}) {
     const [title, setTitle] = useState(null)
     const [isFlipped, setIsFlipped] = useState(false);
     const flipAnimation = useRef(new Animated.Value(0)).current
+    const [toPlay, setPlaying] = useState(false)
     const [themeN, setThemeN] = useState(0)
     const [theme, setTheme] = useState("basic")
     const themes = {
@@ -38,6 +43,10 @@ export default function FlashCards({navigation}) {
     let temptitle = "WaterFall Model"
 
 
+    // useEffect(() => {
+    //     setCards(tempcards);
+    //     setTitle(temptitle);
+    // }, [])
 
     useEffect(() => {
         if (data) {
@@ -70,7 +79,10 @@ export default function FlashCards({navigation}) {
         flipAnimation.setValue(0);
         setIsFlipped(false);
         pan.setValue({ x: 0, y: 0 });
+
     }, [index]);
+
+
 
     const frontInterpolate = flipAnimation.interpolate({
         inputRange: [0, 180],
@@ -152,6 +164,69 @@ export default function FlashCards({navigation}) {
         },
     });
 
+    async function speakText(text) {
+        Speech.speak(text, {
+            language: 'en-IN',
+            voice: 'en-in-x-end-network',
+            pitch: 1.5,
+            rate: 1,
+            onDone: () => console.log('Speech finished!'),
+            onError: (error) => console.error('Speech error:', error),
+        }
+        )
+    }
+
+    useEffect(() => {
+        if (toPlay) {
+            Speech.stop()
+        } else {
+            if (cards && cards.length > 0 && cards[index] && cards[index][0]) {
+                speakText(cards[index][0]);
+            }
+        }
+    }, [toPlay, cards, index])
+
+    async function shareCard() {
+        console.log("clicked")
+        const uid = await AsyncStorage.getItem("uid")
+
+        const res = await fetch(baseUrl + "getPandC", {
+            method:"POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                uid: uid,
+                title: title,
+            })
+        })
+
+        const data = await res.json();
+        console.log(data);
+        if (data.code == 200) {
+            let shareURL = baseUrl + "open?f=" + data["pID"] + "&i=" + data["cID"]
+
+            try {
+                const result = await Share.share({
+                    message: ("Flash App - Practice through creative flashcards \n Open this card : " + shareURL)
+                });
+
+                if (result.action === Share.sharedAction) {
+                    if (result.activityType) {
+                        console.log("shared with : ", result.activityType)
+                    } else {
+                        console.log("shared")
+                    }
+                }
+                else if (result.action === Share.dismissedAction) {
+                    console.log("dismissed")
+                }
+
+            } catch (error) {
+                console.log(error.message)
+            }
+
+        }
+    }
+
     return (
         <SafeAreaView style={{ marginTop: StatusBar.currentHeight }}>
             <View style={{
@@ -164,13 +239,24 @@ export default function FlashCards({navigation}) {
                 marginTop: 30,
                 borderRadius: 20
             }}>
-                <Text style={styles.title}>{title}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: '10%', justifyContent: 'space-between', paddingLeft: 20, paddingRight: 20 }}>
+                    <TouchableOpacity onPress={() => setPlaying(prevVal => !prevVal)}>
+                        <Image source={toPlay ? require("../assets/other/offSpeaker.png") : require("../assets/other/onSpeaker.png")} style={styles.speakericon} />
+                    </TouchableOpacity>
+                    <View style={{ maxWidth: '65%', alignSelf: 'center', maxHeight: '100%' }}>
+                        <Text style={styles.title}>{title}</Text>
+                    </View>
+                    <TouchableOpacity onPress={shareCard}>
+                        <Image source={require("../assets/other/share.png")} style={styles.speakericon} />
+                    </TouchableOpacity>
+
+                </View>
                 <View style={{ height: '95%' }}>
 
                     <View style={{
                         width: '80%',
                         alignSelf: 'center',
-                        marginTop: '25%',
+                        marginTop: '23%',
                         height: '60%',
                         zIndex: 2,
 
@@ -259,13 +345,13 @@ export default function FlashCards({navigation}) {
                         borderColor: 'black',
                         borderWidth: 1,
                         alignSelf: 'center',
-                        marginTop: '25%',
+                        marginTop: '16%',
                         height: '60%',
                         borderRadius: 20,
                         zIndex: 1,
                         position: 'absolute',
                         right: 20,
-                        bottom: '26%',
+                        bottom: '28%',
                         transform: [{ rotate: '2deg' }]
                     }}></View>
                 </View>
@@ -291,8 +377,14 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 25,
         alignSelf: 'center',
-        marginTop: '10%',
-        maxWidth: '80%',
-        textAlign: 'center'
+        // marginTop: '10%',
+        // maxWidth: '65%',
+        textAlign: 'center',
+        // borderWidth: 1,
+        // borderColor: 'black'
+    },
+    speakericon: {
+        width: 30,
+        height: 30
     }
 })
