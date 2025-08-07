@@ -5,11 +5,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Speech from 'expo-speech';
 
 export default function FlashCards({ navigation }) {
-
-    const baseUrl = "https://rsh1qw88-5000.inc1.devtunnels.ms/"
+    const baseUrl = "https://flash-g7zw.onrender.com/"
 
     const route = useRoute();
-    const { data } = route.params;
+    const { data } = route.params || {}; // Safe destructuring
     const [index, setIndex] = useState(0);
     const [cards, setCards] = useState([])
     const [title, setTitle] = useState(null)
@@ -20,7 +19,8 @@ export default function FlashCards({ navigation }) {
     const [theme, setTheme] = useState("basic")
     const themes = {
         "landscape": [[require("../assets/themes/landscape/theme1.jpg"), '#f49700', "black"], [require("../assets/themes/landscape/theme2.jpg"), "#38dca5", "black"], [require("../assets/themes/landscape/theme3.jpg"), "#5c409d", "white"], [require("../assets/themes/landscape/theme4.jpg"), "#700021", "white"], [require("../assets/themes/landscape/theme5.jpg"), "#fac8c0", "black"],],
-        "basic": [[require("../assets/themes/basic/theme1.jpg"), '#22618f', "white"], [require("../assets/themes/basic/theme2.jpg"), "#f5a25f", "black"], [require("../assets/themes/basic/theme3.jpg"), "#f9eddd", "black"], [require("../assets/themes/basic/theme4.jpg"), "#0b4e5d", "white"], [require("../assets/themes/basic/theme5.jpg"), "#0f596f", "white"],]
+        "basic": [[require("../assets/themes/basic/theme1.jpg"), '#22618f', "white"], [require("../assets/themes/basic/theme2.jpg"), "#f5a25f", "black"], [require("../assets/themes/basic/theme3.jpg"), "#f9eddd", "black"], [require("../assets/themes/basic/theme4.jpg"), "#0b4e5d", "white"], [require("../assets/themes/basic/theme5.jpg"), "#0f596f", "white"],],
+        "dark": [[require("../assets/themes/dark/theme1.png"), '#2b2b2a', "white"], [require("../assets/themes/dark/theme2.png"), "#2b2b2a", "white"], [require("../assets/themes/dark/theme3.png"), "#2b2b2a", "white"], [require("../assets/themes/dark/theme4.png"), "#2b2b2a", "white"], [require("../assets/themes/dark/theme5.png"), "#2b2b2a", "white"],]
     }
 
     console.log("Theme loaded successfully")
@@ -36,6 +36,7 @@ export default function FlashCards({ navigation }) {
                 setTheme("basic")
         }
         getTheme()
+        console.log("one")
     }, [])
 
     let tempcards = [["What is the primary characteristic of the Waterfall model?", "Sequential phases."], ["List the typical phases of the Waterfall model.", "Requirements, Design, Implementation, Testing, Deployment, Maintenance."], ["Is the Waterfall model an iterative development approach?", "No."], ["What type of projects is the Waterfall model best suited for?", "Projects with stable and well-understood requirements."], ["What is a major disadvantage of the Waterfall model regarding late changes?", "It is difficult and costly to accommodate changes late in the lifecycle."], ["What is an advantage of using the Waterfall model?", "It is simple to understand and manage."], ["Does the Waterfall model allow for feedback loops between phases?", "No, typically not directly."], ["When is testing typically performed in the Waterfall model?", "After implementation is complete."], ["What happens if a critical error is found during the testing phase?", "It can lead to significant rework across previous phases."], ["Is customer involvement continuous throughout the Waterfall project?", "No, mostly at the beginning and end."]]
@@ -49,27 +50,37 @@ export default function FlashCards({ navigation }) {
     // }, [])
 
     useEffect(() => {
-        if (data) {
-            const nestedArray = Object.keys(data)
-                .map(key => data[key])
-                .filter(pair => pair.length === 2)
-            console.log(nestedArray)
-            // console.log("received data")
-            setCards(nestedArray)
+        try {
+            if (data && typeof data === 'object') {
+                const nestedArray = Object.keys(data)
+                    .map(key => data[key])
+                    .filter(pair => Array.isArray(pair) && pair.length === 2)
+                console.log('Processed cards:', nestedArray)
+                setCards(nestedArray)
 
-            const Title = Object.keys(data)
-                .map(key => data[key])
-                .filter(pair => pair.length === 1)
-            setTitle(Title)
+                const Title = Object.keys(data)
+                    .map(key => data[key])
+                    .filter(pair => Array.isArray(pair) && pair.length === 1)
+                console.log('Processed title:', Title)
+                setTitle(Title[0] || "Untitled")
+            } else {
+                console.warn('No valid data received, using fallback');
+                setCards(tempcards);
+                setTitle(temptitle);
+            }
+        } catch (error) {
+            console.error('Error processing data:', error);
+            setCards(tempcards);
+            setTitle(temptitle);
         }
-    }, [])
+    }, [data])
 
     useEffect(() => {
         const backHandler = BackHandler.addEventListener("hardwareBackPress", async () => {
             navigation.replace("Home");
             return true;
         });
-
+        console.log("three")
         return () => backHandler.remove();
     }, []);
 
@@ -79,7 +90,7 @@ export default function FlashCards({ navigation }) {
         flipAnimation.setValue(0);
         setIsFlipped(false);
         pan.setValue({ x: 0, y: 0 });
-
+        console.log("four")
     }, [index]);
 
 
@@ -174,6 +185,7 @@ export default function FlashCards({ navigation }) {
             onError: (error) => console.error('Speech error:', error),
         }
         )
+        console.log("five")
     }
 
     useEffect(() => {
@@ -184,6 +196,7 @@ export default function FlashCards({ navigation }) {
                 speakText(cards[index][0]);
             }
         }
+        console.log("six")
     }, [toPlay, cards, index])
 
     async function shareCard() {
@@ -191,7 +204,7 @@ export default function FlashCards({ navigation }) {
         const uid = await AsyncStorage.getItem("uid")
 
         const res = await fetch(baseUrl + "getPandC", {
-            method:"POST",
+            method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 uid: uid,
@@ -225,6 +238,7 @@ export default function FlashCards({ navigation }) {
             }
 
         }
+        console.log("seven")
     }
 
     return (
@@ -341,7 +355,7 @@ export default function FlashCards({ navigation }) {
                     <View style={{
                         width: '80%',
                         // backgroundColor: '#8b3d3dff',
-                        backgroundColor: 'rgba(222, 228, 95, 1)',
+                        backgroundColor: theme == 'dark' ? "#666564" : 'rgba(222, 228, 95, 1)',
                         borderColor: 'black',
                         borderWidth: 1,
                         alignSelf: 'center',
