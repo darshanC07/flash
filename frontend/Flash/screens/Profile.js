@@ -133,7 +133,7 @@ export default function Profile({ navigation }) {
                         navigation.replace("SignUp")
                     }}>
                         <View>
-                            <Text style={{ fontSize: 20 }}>Logout</Text>
+                            <Text style={{ fontSize: 20 ,color:'#1F2937'}}>Logout</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -149,13 +149,13 @@ const styles = StyleSheet.create({
     pictureCircle: {
         height: 130,
         width: 130,
-        backgroundColor: 'white',
+        // backgroundColor: 'white',
         alignSelf: 'center',
         borderRadius: '50%',
         position: 'relative',
         bottom: "10%",
-        borderWidth: 2,
-        borderColor: 'black',
+        // borderWidth: 2,
+        // borderColor: 'black',
         alignItems:'center',
         justifyContent:'center'
     },
@@ -200,6 +200,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         position: 'relative',
         bottom: '8%',
+        color:'#1F2937'
         // fontStyle:'italic'
     },
     optionContainer: {
@@ -230,7 +231,8 @@ const styles = StyleSheet.create({
     },
     optionText: {
         fontSize: 20,
-        marginLeft: 15
+        marginLeft: 15,
+        color:'#1F2937'
     },
     loginButton: {
         width: 150,
