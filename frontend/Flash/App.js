@@ -7,27 +7,23 @@ import Home from './screens/Home'
 import Login from './screens/Login';
 import Generate from './screens/Generate';
 import FlashCards from './screens/FlashCards';
-import AnimatedCardFlip from './screens/AnimatedCardFlip';
 import Profile from './screens/Profile';
 import Themes from './screens/Themes';
-import temp from './screens/temp';
 const Stack = createNativeStackNavigator()
 
 import * as Linking from 'expo-linking';
 
 const linking = {
-  prefixes: ['flashapp://'],  // This should match your app.json scheme
+  prefixes: ['flashapp://'], 
   config: {
     screens: {
       SignUp: 'signup',
       Home: 'home',
       Login: 'login',
       Generate: 'generate',
-      FlashCards: 'flashcards/:data', // Accepts "data" param from link
+      FlashCards: 'flashcards/:data', 
       Profile: 'profile',
       Themes: 'themes',
-      ani: 'ani',
-      temp: 'temp/:data'
     }
   }
 };
@@ -35,7 +31,7 @@ const linking = {
 export default function App() {
   return (
     <NavigationContainer linking={linking}>
-      <Stack.Navigator initialRouteName='Home' >
+      <Stack.Navigator initialRouteName='SignUp' >
         <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }}></Stack.Screen>
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}></Stack.Screen>
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}></Stack.Screen>
@@ -43,8 +39,6 @@ export default function App() {
         <Stack.Screen name="FlashCards" component={FlashCards} options={{ headerShown: false }}></Stack.Screen>
         <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }}></Stack.Screen>
         <Stack.Screen name="Themes" component={Themes} options={{ headerShown: false }}></Stack.Screen>
-        <Stack.Screen name="ani" component={AnimatedCardFlip} options={{ headerShown: false }}></Stack.Screen>
-        <Stack.Screen name="temp" component={temp} options={{ headerShown: false }}></Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
     // <View>
