@@ -109,7 +109,7 @@ export default function Home({ navigation }) {
       <View key={'header'} style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ alignItems: 'center', flexDirection: 'row', gap: 8 }}>
           {/* <Image source={require("../assets/home/logo.png")} style={stylesheet.logo}/> */}
-          <Text style={{ fontSize: 30, fontWeight: 'bold' }}>Flash</Text>
+          <Text style={{ fontSize: 30, fontWeight: 'bold', color:"#1F2937" }}>Flash</Text>
         </View>
         <View style={{
           flexDirection: 'row',
@@ -126,7 +126,7 @@ export default function Home({ navigation }) {
             borderRadius: 10
           }}>
             <Image source={require("../assets/home/streak.png")} style={stylesheet.streak} />
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>2</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold',color:'#1F2937' }}>2</Text>
           </View>
           <TouchableWithoutFeedback onPress={() => { navigation.navigate("Profile") }}>
             {/* <Image source={require("../assets/home/user.png")} style={stylesheet.user} /> */}
@@ -138,8 +138,8 @@ export default function Home({ navigation }) {
       <View key={'greeting'} style={stylesheet.greetingContainer}>
         <View>
           <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'baseline' }}>
-            <Text style={{ fontSize: 22 }}>{greeting}</Text>
-            <Text style={{ fontSize: 22, }}> {name ? name : 'Buddy'}</Text>
+            <Text style={{ fontSize: 22 , color:'#1F2937'}}>{greeting}</Text>
+            <Text style={{ fontSize: 22,color:'#1F2937' }}> {name ? name : 'Buddy'}</Text>
           </View>
           <Text style={{ color: "#454242", fontSize: 18 }}>Ready to learn something new?</Text>
         </View>
@@ -158,7 +158,7 @@ export default function Home({ navigation }) {
         <Text style={stylesheet.text}>What would you like to learn {'\n'}today?</Text>
         <TouchableOpacity style={stylesheet.start} onPress={() => { navigation.navigate("Generate") }}>
           <View >
-            <Text style={{ fontSize: 20 }}>Generate</Text>
+            <Text style={{ fontSize: 20, color:'#1F2937' }}>Generate</Text>
           </View>
 
         </TouchableOpacity>
@@ -177,7 +177,7 @@ export default function Home({ navigation }) {
         bottom: '52.5%',
         paddingLeft: 20,
         fontSize: 18,
-
+        color:'#1F2937'
       }}>Your Collections</Text>
       <View style={stylesheet.collections}>
         {collections.length === 0 ?
@@ -429,6 +429,7 @@ const stylesheet = StyleSheet.create({
     fontSize: 25,
     maxWidth: '60%',
     marginTop: '5%',
-    marginLeft: 10
+    marginLeft: 10,
+    color:'#1F2937'
   }
 })
