@@ -173,22 +173,18 @@ def getUserData():
 def getPandC():
     data = request.json
     uid = data["uid"]
-    cTitle = data["title"][0]
-    print(f"received title = {cTitle}",flush=True)
+    cTitle = data["title"][0][0]
     print(uid)
     userData = users.document(uid).get().to_dict()
     cID = -1
     for i,card in enumerate(userData["creations"]):
         for c in card.values():
             if len(c)==1:
-                print(f'creation{i} title = {c}',flush=True)
+                print(c,flush=True)
                 print(cTitle,flush=True)
                 if cTitle==c[0]:
                     cID = i
                     break
-    print(f"creations length : {len(userData["creations"])}",flush=True)
-    print(f"i = {i}",flush=True)
-    print(f"cID = {cID}",flush=True)
     print("request fulfilled",flush=True)
     return {
         "pID" : userData["publicID"],
@@ -217,8 +213,9 @@ def open_flashapp():
                 print(user[0].id,flush=True)
                 userData = users.document(actual_user_id).get().to_dict()
                 cd = userData["creations"][int(encoded_cardID)]
-                print(userData["creations"][int(encoded_cardID)],flush=True)
+                # print(userData)
                 # return userData["creations"][int(encoded_cardID)]
+                # cd = json.dumps(cd)
                 return render_template("landing.html",cd=cd)
         else :
             return render_template("error.html")
