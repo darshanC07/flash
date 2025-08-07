@@ -213,7 +213,7 @@ def open_flashapp():
                 print(user[0].id,flush=True)
                 userData = users.document(actual_user_id).get().to_dict()
                 cd = userData["creations"][int(encoded_cardID)]
-                # print(userData)
+                print(userData["creations"][int(encoded_cardID)],flush=True)
                 # return userData["creations"][int(encoded_cardID)]
                 return render_template("landing.html",cd=cd)
         else :
