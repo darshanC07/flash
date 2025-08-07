@@ -11,23 +11,23 @@ export default function Home({ navigation }) {
   const [greeting, setGreeting] = useState(null)
   const [collections, setCollections] = useState([])
 
-  const baseUrl = "https://rsh1qw88-5000.inc1.devtunnels.ms/"
+  const baseUrl = "https://flash-g7zw.onrender.com/"
 
   useEffect(() => {
     let now = new Date()
     let hrs = now.getHours()
 
     if (hrs >= 4 && hrs <= 12) {
-      setGreeting("Good Morning")
+      setGreeting("Good Morning,")
     }
     else if (hrs > 12 && hrs <= 16) {
-      setGreeting("Good Afternoon")
+      setGreeting("Good Afternoon,")
     }
     else if (hrs > 16 && hrs <= 19) {
-      setGreeting("Good Evening")
+      setGreeting("Good Evening,")
     }
     else {
-      setGreeting("Good Night")
+      setGreeting("Good Night,")
     }
   }, [])
 
@@ -40,7 +40,7 @@ export default function Home({ navigation }) {
           setUID(storedUID)
           setName(await AsyncStorage.getItem('name'))
           setEmail(await AsyncStorage.getItem('email'))
-          
+
           await getCreations(storedUID)
         } else {
           navigation.replace("SignUp")
@@ -89,8 +89,11 @@ export default function Home({ navigation }) {
     // console.log("cards  : "+JSON.stringify(collections[index]))
     let data = collections[index]
     console.log("navigating")
+    console.log("data " ,data)
     navigation.navigate("FlashCards", { data })
   }
+
+
 
   return (
     <SafeAreaView style={{
@@ -103,9 +106,10 @@ export default function Home({ navigation }) {
       paddingLeft: 10,
       paddingRight: 10
     }}>
-      <View key={'header'} style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
-        <View>
-          <Text>Flash</Text>
+      <View key={'header'} style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ alignItems: 'center', flexDirection: 'row', gap: 8 }}>
+          {/* <Image source={require("../assets/home/logo.png")} style={stylesheet.logo}/> */}
+          <Text style={{ fontSize: 30, fontWeight: 'bold' }}>Flash</Text>
         </View>
         <View style={{
           flexDirection: 'row',
@@ -134,23 +138,46 @@ export default function Home({ navigation }) {
       <View key={'greeting'} style={stylesheet.greetingContainer}>
         <View>
           <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'baseline' }}>
-            <Text style={{ fontSize: 24 }}>{greeting}</Text>
-            <Text style={{ fontSize: 24, fontWeight: 'bold' }}> {name ? name : 'Buddy'}</Text>
+            <Text style={{ fontSize: 22 }}>{greeting}</Text>
+            <Text style={{ fontSize: 22, }}> {name ? name : 'Buddy'}</Text>
           </View>
           <Text style={{ color: "#454242", fontSize: 18 }}>Ready to learn something new?</Text>
         </View>
+      </View>
+      {/* <View key={"latest cards"} style={stylesheet.latestContainer}>
+          <Text style={{fontSize:20}}>Latest Cards</Text>
+          <View style={stylesheet.lCardConatiner}></View>
       </View>
       <TouchableOpacity style={stylesheet.start} onPress={() => { navigation.navigate("Generate") }}>
         <View >
           <Text style={{ fontSize: 20 }}>Generate</Text>
         </View>
 
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+      <View style={stylesheet.generateContainer}>
+        <Text style={stylesheet.text}>What would you like to learn {'\n'}today?</Text>
+        <TouchableOpacity style={stylesheet.start} onPress={() => { navigation.navigate("Generate") }}>
+          <View >
+            <Text style={{ fontSize: 20 }}>Generate</Text>
+          </View>
+
+        </TouchableOpacity>
+        <View style={stylesheet.girl} >
+          <Image source={require("../assets/home/img.png")} style={{
+            width: "100%",
+            height: '100%',
+            position: 'relative',
+            top: 23,
+            borderBottomRightRadius: 45,
+          }} />
+        </View>
+      </View>
       <Text style={{
         position: 'absolute',
-        bottom: '56%',
+        bottom: '52.5%',
         paddingLeft: 20,
-        fontSize: 20
+        fontSize: 18,
+
       }}>Your Collections</Text>
       <View style={stylesheet.collections}>
         {collections.length === 0 ?
@@ -163,35 +190,21 @@ export default function Home({ navigation }) {
           <ScrollView showsVerticalScrollIndicator={false}>
             {
               collections.map((card, index) => {
-                const gradientSets = [
-                  {
-                    colors: ["#8485E1", "#a294f0", "#ddd8e0ff"],
-                    start: { x: 0, y: 0 },
-                    end: { x: 1, y: 1 }
-                  },
-                  {
-                    colors: ["#9c8cf0", "#8485E1", "#b8a9f5"],
-                    start: { x: 0, y: 0 },
-                    end: { x: 1, y: 0 }
-                  },
-                  {
-                    colors: ["#8485E1", "#7269d6", "#a294f0"],
-                    start: { x: 0, y: 1 },
-                    end: { x: 1, y: 0 }
-                  },
-                  {
-                    colors: ["#a294f0", "#8485E1", "#ddd8e0ff"],
-                    start: { x: 0.2, y: 0 },
-                    end: { x: 0.8, y: 1 }
-                  },
-                  {
-                    colors: ["#ddd8e0ff", "#b8a9f5", "#8485E1"],
-                    start: { x: 0, y: 0 },
-                    end: { x: 1, y: 1 }
-                  }
+                const colorSets = [
+                  "#8485E1",
+                  "#6366F1",
+                  "#8B5CF6",
+                  "#06B6D4",
+                  "#10B981",
+                  "#F59E0B",
+                  "#EF4444",
+                  "#EC4899",
+                  "#84CC16",
+                  "#F97316"
                 ];
 
-                const currentGradient = gradientSets[index % gradientSets.length];
+                // const currentColor = colorSets[index % colorSets.length];
+                const currentColor = "#6366F1";
 
                 let Title = Object.keys(card)
                   .map(key => card[key])
@@ -199,19 +212,12 @@ export default function Home({ navigation }) {
 
                 return (
                   <TouchableOpacity style={stylesheet.cardContainer} key={index} onPress={() => showCard(index)}>
-                    <LinearGradient
-                      colors={currentGradient.colors}
-                      style={stylesheet.gradientBackground}
-                      start={currentGradient.start}
-                      end={currentGradient.end}>
-
-                      <View style={stylesheet.decorativeCircle1} />
-                      <View style={stylesheet.decorativeCircle2} />
-
+                   
+                    <View style={[stylesheet.solidBackground, { backgroundColor: currentColor }]}>
                       <View style={stylesheet.cardContent}>
                         <Text style={stylesheet.cardTitle}>{Title}</Text>
                       </View>
-                    </LinearGradient>
+                    </View>
                   </TouchableOpacity>
                 )
               })
@@ -224,6 +230,10 @@ export default function Home({ navigation }) {
 }
 
 const stylesheet = StyleSheet.create({
+  logo: {
+    height: 45,
+    width: 26
+  },
   streak: {
     height: 25,
     width: 25,
@@ -237,40 +247,54 @@ const stylesheet = StyleSheet.create({
     borderColor: 'black',
     borderWidth: 1,
     height: '10%',
-    backgroundColor: '#ddd8e0ff',
+    // backgroundColor: '#ddd8e0ff',
+    backgroundColor: '#d9daf3ff',
     borderRadius: 10,
     marginTop: '3%',
     paddingLeft: 10,
     paddingRight: 10,
     justifyContent: 'center',
-    marginTop: '10%',
+    // marginTop: '10%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 10,
   },
   collections: {
     width: '100%',
     borderWidth: 1,
     borderColor: 'black',
-    height: '50%',
+    height: '47%',
     position: 'absolute',
     bottom: '5%',
     alignSelf: 'center',
     borderRadius: 20,
-    backgroundColor: '#ddd8e0ff',
+    // backgroundColor: '#ddd8e0ff',
+    backgroundColor: '#d9daf3ff',
     paddingLeft: 10,
     paddingRight: 10,
-    paddingTop: 10
+    paddingTop: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 10,
+
   },
   start: {
     borderWidth: 1,
     borderColor: 'black',
-    width: '40%',
-    height: '5%',
+    width: '35%',
+    height: '23%',
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
     position: 'absolute',
-    bottom: '65%',
+    bottom: 30,
     backgroundColor: '#a3a4efff',
-    borderRadius: 10
+    borderRadius: 10,
+    left: 8
   },
   cardContainer: {
     borderWidth: 1,
@@ -280,8 +304,19 @@ const stylesheet = StyleSheet.create({
     marginBottom: 15,
     position: 'relative',
     overflow: 'hidden',
-    height: 70,
+    height: 60,
     elevation: 0,
+  },
+  solidBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 20,
+    justifyContent: 'center',
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   gradientBackground: {
     position: 'absolute',
@@ -301,7 +336,8 @@ const stylesheet = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    // backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    // backgroundColor: '#d9daf3ff',
     top: -20,
     right: -20,
   },
@@ -351,5 +387,48 @@ const stylesheet = StyleSheet.create({
     fontSize: 16,
     color: 'white',
     fontWeight: 'bold',
+  },
+  lCardConatiner: {
+    width: '100%',
+    height: '70%',
+    borderWidth: 1,
+    borderColor: 'black'
+  },
+  latestContainer: {
+    height: '12%',
+    // backgroundColor:'yellow',
+    marginTop: '5%'
+  },
+  generateContainer: {
+    height: "25%",
+    borderWidth: 1,
+    borderColor: "black",
+    marginTop: 15,
+    borderRadius: 20,
+    backgroundColor: '#F0BF42',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 10,
+
+  },
+  girl: {
+    width: '60%',
+    height: '85%',
+    borderBottomRightRadius: 30,
+    // borderWidth: 1,
+    // borderColor: 'black',
+    position: 'absolute',
+    right: 5,
+    // left:20,
+    // bottom: 6,
+    top: 19,
+  },
+  text: {
+    fontSize: 25,
+    maxWidth: '60%',
+    marginTop: '5%',
+    marginLeft: 10
   }
 })
