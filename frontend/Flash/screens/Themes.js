@@ -87,7 +87,8 @@ export default function Themes({ navigation }) {
                     </TouchableOpacity>
                     <Text style={styles.title}>Card Themes</Text>
                 </View>
-                <View style={{ flex: 1, paddingBottom: 20, marginTop: 10 }}>
+                <View style={styles.line} />
+                <View style={{ flex: 1, paddingBottom: 20, marginTop: 0 }}>
                     <ScrollView
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={styles.scrollContent}
@@ -118,6 +119,7 @@ export default function Themes({ navigation }) {
                                     <Image style={styles.themeImage} source={require("../assets/themes/basic/theme5.jpg")} />
                                 </ScrollView>
                             </View>
+                            {/* <View style={styles.line} /> */}
                         </View>
                         <View style={[styles.theme, { marginBottom: 0 }]}>
                             <View style={styles.themeNameContainer}>
@@ -138,18 +140,18 @@ export default function Themes({ navigation }) {
                         </View>
                         <View style={[styles.theme, { marginBottom: 0 }]}>
                             <View style={styles.themeNameContainer}>
-                                <Text style={styles.themeName}>Landscape</Text>
+                                <Text style={styles.themeName}>Dark</Text>
                                 <TouchableOpacity onPress={() => selectTheme("dark")}>
                                     <Image source={theme["dark"] ? require("../assets/other/selected.png") : require("../assets/other/unselected.png")} style={styles.selectIcon} />
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.imgContainer}>
                                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                    <Image style={styles.themeImage} source={require("../assets/themes/landscape/theme1.jpg")} />
-                                    <Image style={styles.themeImage} source={require("../assets/themes/landscape/theme2.jpg")} />
-                                    <Image style={styles.themeImage} source={require("../assets/themes/landscape/theme3.jpg")} />
-                                    <Image style={styles.themeImage} source={require("../assets/themes/landscape/theme4.jpg")} />
-                                    <Image style={styles.themeImage} source={require("../assets/themes/landscape/theme5.jpg")} />
+                                    <Image style={styles.themeImage} source={require("../assets/themes/dark/theme1.png")} />
+                                    <Image style={styles.themeImage} source={require("../assets/themes/dark/theme2.png")} />
+                                    <Image style={styles.themeImage} source={require("../assets/themes/dark/theme3.png")} />
+                                    <Image style={styles.themeImage} source={require("../assets/themes/dark/theme4.png")} />
+                                    <Image style={styles.themeImage} source={require("../assets/themes/dark/theme5.png")} />
                                 </ScrollView>
                             </View>
                         </View>
@@ -167,12 +169,14 @@ const styles = StyleSheet.create({
         // borderWidth:1,
         borderTopRightRadius: 20,
         borderTopLeftRadius: 20,
+        borderRadius: 20,
         borderColor: 'black',
         marginLeft: 10,
         marginRight: 10,
         // height: Dimensions.get('window').height,
-        height: '100%'
+        height: '100%',
         // backgroundColor: '#e1dadaff'
+        backgroundColor: '#d9daf3ff',
     },
     title: {
         fontSize: 22,
@@ -229,5 +233,11 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'black',
         marginRight: 10
-    }
+    },
+    line: {
+        borderBottomColor: 'black', 
+        borderBottomWidth: StyleSheet.hairlineWidth, 
+        width: '100%', 
+        marginVertical: 10, 
+    },
 });
