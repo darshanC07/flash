@@ -1,11 +1,13 @@
-import { SafeAreaView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View, BackHandler } from 'react-native'
+import { StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View, BackHandler, Dimensions } from 'react-native'
+import {SafeAreaView} from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useEffect, useState } from 'react'
+import { useVideoPlayer, VideoView } from 'expo-video';
 
 export default function Generate({ navigation }) {
     const [input, setInput] = useState("")
     const [cards, setCards] = useState(null)
-    const baseUrl = "https://rsh1qw88-5000.inc1.devtunnels.ms/"
+    const baseUrl = "https://flash-g7zw.onrender.com/"
     const [userID, setID] = useState(null);
     async function getUID() {
         let userID = await AsyncStorage.getItem("uid")
@@ -16,7 +18,7 @@ export default function Generate({ navigation }) {
             setID(await getUID())
         }
         temp()
-    },[])
+    }, [])
     async function generateFlashCard() {
         console.log("input : " + input)
         const res = await fetch(baseUrl + "generate", {
@@ -52,21 +54,48 @@ export default function Generate({ navigation }) {
         return () => backHandler.remove();
     }, []);
 
+    const player = useVideoPlayer(require("../assets/other/bg.mp4"), player => {
+        player.loop = true;
+        player.staysActiveInBackground = true;
+        player.play();
+        // useNativeControls={false};
+    });
+
     return (
-        <SafeAreaView style={{ marginTop: StatusBar.currentHeight, alignItems: 'center', justifyContent: 'center', height: '80%' }}>
+        <SafeAreaView style={{ marginTop: StatusBar.currentHeight-15, alignItems: 'center', justifyContent: 'center', height: '90%' }}>
+            <View pointerEvents="none" style={stylesheet.bgVideoContainer}>
+                <VideoView style={stylesheet.bgVideo} player={player} contentFit="cover"/>
+            </View>
             <View style={{
                 // alignSelf:'center',
                 height: '50%',
                 // borderColor: 'black',
                 // borderWidth: 1,
-                width: '90%',
+                width: '80%',
                 marginLeft: 10,
-                marginRight: 10
+                marginRight: 10,
+                // backgroundColor: 'white'
             }}>
-                <Text style={{
-                    fontSize: 20,
-                    alignSelf: 'center'
-                }}>Describe Your Topic</Text>
+                <View style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0)', 
+                    padding: 10,
+                    borderRadius: 5,
+                    marginBottom: 10,
+                    height: 60,
+                    width: "100%",
+                    zIndex: 3,
+                    position: 'absolute',
+                    top: 0, 
+                    justifyContent: 'center' 
+                }}>
+
+                    <Text style={{
+                        fontSize: 24,
+                        alignSelf: 'center',
+                        color: 'white',
+                       
+                    }}>Describe Your Topic</Text>
+                </View>
                 <View style={stylesheet.input}>
                     <TextInput style={stylesheet.textField} multiline={true}
                         numberOfLines={10} value={input} onChangeText={(text) => setInput(text)} />
@@ -92,7 +121,11 @@ const stylesheet = StyleSheet.create({
         fontSize: 20,
         color: "#242424",
         textAlign: "left",
-        width: '100%'
+        width: '100%',
+        zIndex: 2,
+        backgroundColor: 'white', 
+        padding: 10 ,
+        borderRadius:20
     },
     input: {
         width: '100%',
@@ -101,7 +134,9 @@ const stylesheet = StyleSheet.create({
         borderWidth: 1,
         alignSelf: 'center',
         borderRadius: 10,
-        marginTop: 30
+        marginTop: "20%",
+        zIndex: 2,
+        backgroundColor: 'white' 
     },
     createButton: {
         borderColor: 'black',
@@ -113,6 +148,23 @@ const stylesheet = StyleSheet.create({
         alignItems: 'center',
         marginTop: 30,
         borderRadius: 10,
-        backgroundColor: '#8485E1'
+        backgroundColor: '#8485E1',
+        zIndex: 2
+    },
+    bgVideoContainer: {
+        height: Dimensions.get("window").height,
+        width: '100%',
+        marginLeft: 5,
+        marginRight: 5,
+        position: 'absolute',
+        zIndex: 1,
+        borderRadius: 20,
+        alignSelf: 'center',
+        marginTop:"32%"
+    },
+    bgVideo: {
+        height: '100%',
+        width: '100%',
+        // zIndex: 2,
     }
 })
