@@ -185,7 +185,7 @@ def getPandC():
                 if cTitle==c[0]:
                     cID = i
                     break
-    
+    print("request fulfilled")
     return {
         "pID" : userData["publicID"],
         "cID" : cID,
