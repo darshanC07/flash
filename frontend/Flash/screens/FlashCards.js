@@ -51,7 +51,11 @@ export default function FlashCards({ navigation }) {
 
     useEffect(() => {
         try {
-            if (data && typeof data === 'object') {
+            if (data ) {
+                if(typeof data !== 'object'){
+                    data = JSON.parse(data)
+                }
+                console.log(data)
                 const nestedArray = Object.keys(data)
                     .map(key => data[key])
                     .filter(pair => Array.isArray(pair) && pair.length === 2)
@@ -319,6 +323,7 @@ export default function FlashCards({ navigation }) {
                                                 <Text style={{
                                                     fontSize: 20,
                                                     textAlign: 'center',
+                                                    color:'#1F2937'
                                                 }}>{cards[index] && cards[index][0]}</Text>
 
                                             </View>
@@ -396,6 +401,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         // borderWidth: 1,
         // borderColor: 'black'
+        color:'#1F2937'
     },
     speakericon: {
         width: 30,
