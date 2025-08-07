@@ -6,12 +6,13 @@
     <title>Opening Flash....</title>
     <script type="text/javascript">
       function openApp() {
-        const v = {{ cd | tojson | safe }};
+        // Pass the Python object to JavaScript
+        const cd = {{ cd | tojson }};
+        const v = JSON.stringify(cd);
         console.log(v);
         console.log(typeof v);
-        const stringifiedData = JSON.stringify(v);
-        console.log("flashapp://flashcards/" + stringifiedData);
-        window.location = "flashapp://flashcards/" + encodeURIComponent(stringifiedData);
+        console.log("flashapp://flashcards/" + v);
+        window.location = "flashapp://flashcards/" + encodeURIComponent(v);
 
         setTimeout(function(){
             window.location = "https://play.google.com/store/apps/details?id=com.darshanc07.Flash";
