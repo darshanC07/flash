@@ -6,6 +6,9 @@
     <title>Opening Flash....</title>
     <script type="text/javascript">
       function openApp() {
+        console.log(cd);
+        console.log(typeof cd);
+        console.log("flashapp://flashcards/{{cd}}");
         window.location = "flashapp://flashcards/{{cd}}";
 
         setTimeout(function(){
