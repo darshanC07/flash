@@ -1,11 +1,13 @@
-import { ScrollView, StatusBar, StyleSheet, Text, View, Image, TouchableOpacity, BackHandler } from 'react-native'
+import { ScrollView, StatusBar, StyleSheet, Text, View, Image, TouchableOpacity, BackHandler, Share } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, MaterialIcons, Ionicons } from '@expo/vector-icons'
+import { openBrowserAsync } from 'expo-web-browser';
 
 export default function Profile({ navigation }) {
     const [theme, setTheme] = useState("temp")
+    const [name, setName] = useState("User")
     useEffect(() => {
         const getTheme = async () => {
             const valTheme = await AsyncStorage.getItem("theme")
@@ -34,33 +36,72 @@ export default function Profile({ navigation }) {
 
         return () => backHandler.remove();
     }, []);
+
+    useEffect(() => {
+        const getName = async () => {
+            setName(await AsyncStorage.getItem("name"))
+        }
+        getName()
+    }, [])
+
+    async function referFriend() {
+        console.log("clicked")
+
+        try {
+            const result = await Share.share({
+                message: ("Flash App - Practice through creative flashcards \nShare : " + "https://github.com/darshanC07/flash")
+            });
+
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    console.log("shared with : ", result.activityType)
+                } else {
+                    console.log("shared")
+                }
+            }
+            else if (result.action === Share.dismissedAction) {
+                console.log("dismissed")
+            }
+
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
     return (
         <SafeAreaView >
             <View style={styles.main}>
+                <Image source={require("../assets/profile/bg.png")} style={styles.bg} />
                 <View style={styles.dataContainer}>
-                    <View style={styles.pictureCircle}></View>
-                    <Text style={styles.name}>Darshan</Text>
+                    <View style={styles.pictureCircle}>
+                        <Image source={require("../assets/profile/profile.png")} style={styles.profileIcon} />
+                    </View>
+                    <Text style={styles.name}>{name}</Text>
                     <View style={styles.optionContainer}>
                         <View style={styles.option}>
                             {/* <Image source={require("../assets/profile/cards.png")} style={styles.icon} /> */}
                             <MaterialCommunityIcons name="cards-outline" size={30} color="black" />
+                            <TouchableOpacity onPress={() => navigation.navigate("Themes")}>
                             <Text style={styles.optionText}>Set Card Theme</Text>
+
+                            </TouchableOpacity>
                             <TouchableOpacity style={styles.theme} onPress={() => navigation.navigate("Themes")}>
                                 <View>
-                                    <Text style={{ fontSize: 18, color: '#323487ff' }}>{capitalizeFirstLetter(theme)}</Text>
+                                    <Text style={{ fontSize: 18, color: '#323487ff', fontWeight: 'bold' }}>{capitalizeFirstLetter(theme)}</Text>
                                 </View>
                             </TouchableOpacity>
                         </View>
                         <View style={styles.option}>
                             {/* <Image source={require("../assets/profile/collection.png")} style={styles.icon} /> */}
                             <MaterialIcons name="collections-bookmark" size={30} color="black" />
-                            <Text style={styles.optionText}>Your Collection</Text>
+                            <TouchableOpacity onPress={() => navigation.replace("Home")}>
+                                <Text style={styles.optionText}>Your Collection</Text>
+                            </TouchableOpacity>
                         </View>
-                        <View style={styles.option}>
-                            {/* <Image source={require("../assets/profile/password.png")} style={styles.icon} /> */}
+                        {/* <View style={styles.option}>
                             <Ionicons name="key-outline" size={30} color="black" />
                             <Text style={styles.optionText}>Reset Password</Text>
-                        </View>
+                        </View> */}
                         <View style={styles.option}>
                             <Image source={require("../assets/profile/premium.png")} style={styles.icon} />
                             <Text style={styles.optionText}>Premium Features</Text>
@@ -68,11 +109,17 @@ export default function Profile({ navigation }) {
                         <View style={styles.option}>
                             {/* <Image source={require("../assets/profile/refer.png")} style={styles.icon} /> */}
                             <MaterialCommunityIcons name="share-outline" size={30} color="black" />
-                            <Text style={styles.optionText}>Refer to friend</Text>
+                            <TouchableOpacity onPress={referFriend}>
+                                <Text style={styles.optionText}>Refer to friend</Text>
+
+                            </TouchableOpacity>
                         </View>
                         <View style={styles.option}>
                             <Image source={require("../assets/profile/feedback.png")} style={styles.icon} />
-                            <Text style={styles.optionText}>Feedback and support</Text>
+                            <TouchableOpacity onPress={() => openBrowserAsync("https://github.com/darshanC07/flash")}>
+                                <Text style={styles.optionText}>Feedback and support</Text>
+
+                            </TouchableOpacity>
                         </View>
                     </View>
                     <TouchableOpacity style={styles.loginButton} onPress={() => {
@@ -83,7 +130,7 @@ export default function Profile({ navigation }) {
 
                         }
                         logout()
-                        navigation.navigate("SignUp")
+                        navigation.replace("SignUp")
                     }}>
                         <View>
                             <Text style={{ fontSize: 20 }}>Logout</Text>
@@ -102,15 +149,24 @@ const styles = StyleSheet.create({
     pictureCircle: {
         height: 130,
         width: 130,
-        backgroundColor: 'black',
+        backgroundColor: 'white',
         alignSelf: 'center',
         borderRadius: '50%',
         position: 'relative',
-        bottom: "10%"
+        bottom: "10%",
+        borderWidth: 2,
+        borderColor: 'black',
+        alignItems:'center',
+        justifyContent:'center'
+    },
+    profileIcon: {
+        height: 153,
+        width: 153,
     },
     dataContainer: {
-        backgroundColor: '#E9DEEE',
-        height: '82%',
+        // backgroundColor: '#E9DEEE',
+        backgroundColor: '#d9daf3ff',
+        height: '80%',
         position: 'absolute',
         bottom: 0,
         zIndex: 3,
@@ -118,7 +174,9 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 70,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-        width: '100%'
+        width: '100%',
+        borderWidth: 1,
+        borderColor: 'black'
     },
     main: {
         // marginTop: 10,
@@ -132,11 +190,17 @@ const styles = StyleSheet.create({
         marginRight: 10,
         backgroundColor: '#b585ecff'
     },
+    bg: {
+        width: '100%',
+        height: '28%',
+        borderRadius: 20,
+    },
     name: {
-        fontSize: 20,
+        fontSize: 25,
         alignSelf: 'center',
         position: 'relative',
-        bottom: '8%'
+        bottom: '8%',
+        // fontStyle:'italic'
     },
     optionContainer: {
         // borderWidth: 1,
