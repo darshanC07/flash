@@ -173,7 +173,7 @@ def getUserData():
 def getPandC():
     data = request.json
     uid = data["uid"]
-    cTitle = data["title"][0][0]
+    cTitle = data["title"][0]
     print(f"received title = {cTitle}",flush=True)
     print(uid)
     userData = users.document(uid).get().to_dict()
