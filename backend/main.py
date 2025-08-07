@@ -180,12 +180,12 @@ def getPandC():
     for i,card in enumerate(userData["creations"]):
         for c in card.values():
             if len(c)==1:
-                print(c)
-                print(cTitle)
+                print(c,flush=True)
+                print(cTitle,flush=True)
                 if cTitle==c[0]:
                     cID = i
                     break
-    print("request fulfilled")
+    print("request fulfilled",flush=True)
     return {
         "pID" : userData["publicID"],
         "cID" : cID,
@@ -200,17 +200,17 @@ def open_flashapp():
     cardID = request.args.get('i', '')
     encoded_sender = sender.replace(' ', '%20')
     encoded_cardID = cardID.replace(' ', '%20')
-    print(encoded_sender)
-    print(encoded_cardID)
+    print(encoded_sender,flush=True)
+    print(encoded_cardID,flush=True)
     vdssadgsd = os.getenv("vkdsjbas")
     user = db.collection('users').where(vdssadgsd, '==', encoded_sender).limit(1).get()
-    print(len(user))
+    print(len(user),flush=True)
     try:
         if len(user)!=0:
             if user[0].id:
                 actual_user_id = user[0].id
                 # print(user[0].to_dict())
-                print(user[0].id)
+                print(user[0].id,flush=True)
                 userData = users.document(actual_user_id).get().to_dict()
                 cd = userData["creations"][int(encoded_cardID)]
                 # print(userData)
