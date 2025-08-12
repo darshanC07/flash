@@ -226,5 +226,10 @@ def open_flashapp():
     # return redirect(f'flashapp://temp/{encoded_msg}')  
     # return  render_template("landing.html",s = encoded_sender,c = encoded_cardID)
 
+@app.route("/ping",methods=["GET","POST"])
+def awake():
+  return {"msg" : "awake for more 15 mins"}
+  
+
 if __name__ == "__main__":
     app.run(debug=True)
